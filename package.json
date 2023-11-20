@@ -1,0 +1,19 @@
+{
+  "name": "megamarket.ru",
+  "version": "1.0.0",
+  "description": "",
+  "main": "add-adjusted-prices.user.js",
+  "scripts": {
+    "build": "npm run compile && npm run bundle",
+    "bundle": "npx esbuild dist/index.js --bundle --outfile=add-adjusted-prices.user.js",
+    "compile": "npx tsc --outDir dist"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "esbuild": "0.19.6"
+  }
+}
