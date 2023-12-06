@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         [MegaMarket] Show adjusted prices
 // @namespace    http://tampermonkey.net/
-// @version      1.0.2
+// @version      1.0.3
 // @updateURL    https://oleglegun.github.io/userscript-megamarket.ru/script.user.js
 // @downloadURL  https://oleglegun.github.io/userscript-megamarket.ru/script.user.js
 // @description  Description
