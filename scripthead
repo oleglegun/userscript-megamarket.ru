@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         [MegaMarket] Show adjusted prices
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.0.1
+// @updateURL    https://oleglegun.github.io/userscript-megamarket.ru/pages/userscript.js
+// @downloadURL  https://oleglegun.github.io/userscript-megamarket.ru/pages/userscript.js
 // @description  Description
 // @author       You
 // @match        https://megamarket.ru/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=megamarket.ru
 // @grant        none
-// @require      file:///Users/oleglegun/Projects/tampermonkey/megamarket.ru/add-adjusted-prices.user.js
 // ==/UserScript==
 
