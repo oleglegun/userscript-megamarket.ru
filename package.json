@@ -2,11 +2,12 @@
   "name": "megamarket.ru",
   "version": "1.0.0",
   "description": "",
-  "main": "add-adjusted-prices.user.js",
+  "main": "",
   "scripts": {
-    "build": "npm run compile && npm run bundle",
-    "bundle": "npx esbuild dist/index.js --bundle --outfile=add-adjusted-prices.user.js",
-    "compile": "npx tsc --outDir dist"
+    "build": "npm run compile && npm run bundle && npm run add_tm_header",
+    "bundle": "npx esbuild dist/index.js --minify --bundle --outfile=pages/userscript.js",
+    "compile": "npx tsc --outDir dist",
+    "add_tm_header": "cat scripthead | cat - pages/userscript.js > temp.txt && mv temp.txt pages/userscript.js"
   },
   "author": "",
   "license": "ISC",
