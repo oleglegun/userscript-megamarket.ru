@@ -5,9 +5,9 @@
   "main": "",
   "scripts": {
     "build": "npm run compile && npm run bundle && npm run add_tm_header",
-    "bundle": "npx esbuild dist/index.js --minify --bundle --outfile=pages/userscript.js",
+    "bundle": "npx esbuild dist/index.js --minify --bundle --outfile=pages/script.user.js",
     "compile": "npx tsc --outDir dist",
-    "add_tm_header": "cat scripthead | cat - pages/userscript.js > temp.txt && mv temp.txt pages/userscript.js"
+    "add_tm_header": "cat scripthead | cat - pages/script.user.js > temp.txt && mv temp.txt pages/script.user.js"
   },
   "author": "",
   "license": "ISC",
