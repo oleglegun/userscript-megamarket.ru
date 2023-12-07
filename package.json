@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "",
+  "config": {
+    "scriptName": "script.user.js"
+  },
   "scripts": {
-    "build": "npm run compile && npm run bundle && npm run add_tm_header",
-    "bundle": "npx esbuild dist/index.js --minify --bundle --outfile=script.user.js",
-    "compile": "npx tsc --outDir dist",
-    "add_tm_header": "cat scripthead | cat - script.user.js > temp.txt && mv temp.txt script.user.js"
+    "build": "tsc --outDir dist && npm run bundle && npm run add_tm_header",
+    "commit_gh-pages": "git checkout gh-pages; git add ${npm_package_config_scriptName}",
+    "bundle": "npx esbuild dist/index.js --minify --bundle --outfile=${npm_package_config_scriptName}",
+    "add_tm_header": "cat script-head.user.js | cat - ${npm_package_config_scriptName} > temp.txt && mv temp.txt ${npm_package_config_scriptName}"
   },
   "author": "",
   "license": "ISC",

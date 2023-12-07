@@ -5,6 +5,9 @@ export function log(level: "info" | "error", message: string) {
   \n${message}`)
 }
 
+const ColorUltra: Color = { fg: "white", bg: "#b222ff", border: "black" }
+const ColorNone: Color = { bg: "#cccccc", fg: "black", border: "transparent" }
+
 const Colors: Color[] = [
   { bg: "#00FF22", fg: "black", border: "black" },
   { bg: "#00FF22", fg: "black", border: "transparent" },
@@ -13,7 +16,24 @@ const Colors: Color[] = [
   { bg: "#eba000", fg: "white", border: "transparent" },
   { bg: "#AB3131", fg: "white", border: "transparent" },
   { bg: "#540202", fg: "white", border: "transparent" },
+  { bg: "#000000", fg: "white", border: "transparent" },
 ]
+
+const ColorsForPercentage = [ColorUltra, ...Colors]
+const ColorForComparison = Colors
+
+export function generateColorsInfoHTML() {
+  function colorInfoHTML(c: Color, text: string) {
+    return `<span style="color:${c.fg}; background-color:${c.bg}; border: 1px solid ${c.border}">${text}</span>`
+  }
+
+  return [
+    colorInfoHTML(ColorUltra, "&gt; 60%"),
+    colorInfoHTML(Colors[0], "50% - 60%"),
+    colorInfoHTML(Colors[0], "50% - 60%"),
+    colorInfoHTML(ColorNone, "0%"),
+  ].join(" ")
+}
 
 export function parsePrice(priceString: string) {
   const extractedPrice = /^[\d\s]+/.exec(priceString.replace(/\s/g, ""))?.[0].trim()
@@ -35,12 +55,12 @@ export function calcAdjustedPrice(priceObj: PriceObject) {
 
 export function getColorByBonusAmountPercentage(percentage: number): Color {
   if (percentage > 60) {
-    return { fg: "white", bg: "#b222ff", border: "black" }
+    return ColorUltra
     // return Colors[0]
   } else if (percentage > 50) {
     return Colors[0]
   } else if (percentage === 0) {
-    return { bg: "#cccccc", fg: "black", border: "transparent" }
+    return ColorNone
   }
 
   const colors = Colors.slice(1)
@@ -73,7 +93,7 @@ export function generateUniqueSortedAdjustedPriceList(priceObjList: PriceObject[
   return [...new Set(sortedPriceList)]
 }
 
-export function renderAdjustedPriceHTMLString(adjustedPrice: number, color: Color) {
+export function renderAdjustedPriceHTML(adjustedPrice: number, color: Color) {
   return `<span style="color:${color.fg};background-color:${color.bg};border: 1px solid ${
     color.border
   };padding: 0px 10px;">${adjustedPrice.toLocaleString("ru-RU", {
@@ -81,7 +101,7 @@ export function renderAdjustedPriceHTMLString(adjustedPrice: number, color: Colo
   })}<span>`
 }
 
-export function renderPositionHTMLString(position: number): string {
+export function renderPositionHTML(position: number): string {
   return `<span style="color: #5d3a8e;outline: 1px solid #5d3a8e;padding: 0px 16px;">${position}</span> `
 }
 
@@ -174,7 +194,7 @@ export function prependAdjustedPriceForPriceEachObj(priceObjList: PriceObject[])
 
     const totalPriceEl = document.createElement("span")
 
-    totalPriceEl.innerHTML = renderAdjustedPriceHTMLString(adjustedPrice, color)
+    totalPriceEl.innerHTML = renderAdjustedPriceHTML(adjustedPrice, color)
 
     priceObj.priceEl.prepend(totalPriceEl)
 
