@@ -1,0 +1,23 @@
+{
+  "name": "megamarket.ru",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "config": {
+    "scriptName": "script.user.js"
+  },
+  "scripts": {
+    "build": "tsc --outDir dist && npm run bundle && npm run add_tm_header",
+    "commit_gh-pages": "git checkout gh-pages; git add ${npm_package_config_scriptName}",
+    "bundle": "npx esbuild dist/index.js --minify --bundle --outfile=${npm_package_config_scriptName}",
+    "add_tm_header": "cat script-head.user.js | cat - ${npm_package_config_scriptName} > temp.txt && mv temp.txt ${npm_package_config_scriptName}"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "esbuild": "0.19.6"
+  }
+}
