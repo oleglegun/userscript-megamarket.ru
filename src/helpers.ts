@@ -1,42 +1,25 @@
-const DATA_KEY_ADJUSTED_PRICE = "adjustedPrice"
+const DATA_KEY_ADJUSTED_PRICE = 'adjustedPrice'
 
-export function log(level: "info" | "error", message: string) {
+export function log(level: 'info' | 'error', message: string) {
   console.log(`/*-------------------------- PRICE ADJUSTER -----------------------------------*/\n${level.toUpperCase()} MESSAGE
   \n${message}`)
 }
 
-const ColorUltra: Color = { fg: "white", bg: "#b222ff", border: "black" }
-const ColorNone: Color = { bg: "#cccccc", fg: "black", border: "transparent" }
+const ColorUltra: Color = { fg: 'white', bg: '#b222ff', border: 'black' }
+const ColorNone: Color = { bg: '#cccccc', fg: 'black', border: 'transparent' }
 
-const Colors: Color[] = [
-  { bg: "#00FF22", fg: "black", border: "black" },
-  { bg: "#00FF22", fg: "black", border: "transparent" },
-  { bg: "#00b621", fg: "white", border: "transparent" },
-  { bg: "#f4f44f", fg: "black", border: "transparent" },
-  { bg: "#eba000", fg: "white", border: "transparent" },
-  { bg: "#AB3131", fg: "white", border: "transparent" },
-  { bg: "#540202", fg: "white", border: "transparent" },
-  { bg: "#000000", fg: "white", border: "transparent" },
-]
-
-const ColorsForPercentage = [ColorUltra, ...Colors]
-const ColorForComparison = Colors
-
-export function generateColorsInfoHTML() {
-  function colorInfoHTML(c: Color, text: string) {
-    return `<span style="color:${c.fg}; background-color:${c.bg}; border: 1px solid ${c.border}">${text}</span>`
-  }
-
-  return [
-    colorInfoHTML(ColorUltra, "&gt; 60%"),
-    colorInfoHTML(Colors[0], "50% - 60%"),
-    colorInfoHTML(Colors[0], "50% - 60%"),
-    colorInfoHTML(ColorNone, "0%"),
-  ].join(" ")
+const Colors: { [idx: number]: Color } = {
+  0: { bg: '#00FF22', fg: 'black', border: 'black' },
+  1: { bg: '#00b621', fg: 'white', border: 'transparent' },
+  2: { bg: '#f4f44f', fg: 'black', border: 'transparent' },
+  3: { bg: '#eba000', fg: 'white', border: 'transparent' },
+  4: { bg: '#AB3131', fg: 'white', border: 'transparent' },
+  5: { bg: '#540202', fg: 'white', border: 'transparent' },
+  6: { bg: '#000000', fg: 'white', border: 'transparent' },
 }
 
 export function parsePrice(priceString: string) {
-  const extractedPrice = /^[\d\s]+/.exec(priceString.replace(/\s/g, ""))?.[0].trim()
+  const extractedPrice = /^[\d\s]+/.exec(priceString.replace(/\s/g, ''))?.[0].trim()
 
   if (extractedPrice === undefined) {
     return null
@@ -53,19 +36,48 @@ export function calcAdjustedPrice(priceObj: PriceObject) {
   }
 }
 
+export function generateColorsInfoHTML(type: 'BONUS_AMOUNT' | 'COMPARISON') {
+  function colorInfoHTML(c: Color, text: string) {
+    return `<span style="color:${c.fg}; background-color:${c.bg}; border: 1px solid ${c.border}; padding:0 5px 0;">${text}</span>`
+  }
+
+  if (type === 'BONUS_AMOUNT') {
+    return [
+      colorInfoHTML(ColorNone, '0%'),
+      colorInfoHTML(Colors[5], '1-10%'),
+      colorInfoHTML(Colors[4], '10-20%'),
+      colorInfoHTML(Colors[3], '20-30%'),
+      colorInfoHTML(Colors[2], '30-40%'),
+      colorInfoHTML(Colors[1], '40-50%'),
+      colorInfoHTML(Colors[0], '50-60%'),
+      colorInfoHTML(ColorUltra, '60%+'),
+    ].join(' ')
+  } else if (type === 'COMPARISON') {
+    return [
+      renderPositionHTML('ТОП 1-5'),
+      ...Object.values(Colors).map((color,idx) => colorInfoHTML(color, idx.toString() )),
+    ].join(' ')
+  }
+}
+
 export function getColorByBonusAmountPercentage(percentage: number): Color {
   if (percentage > 60) {
     return ColorUltra
-    // return Colors[0]
   } else if (percentage > 50) {
     return Colors[0]
-  } else if (percentage === 0) {
+  } else if (percentage > 40) {
+    return Colors[1]
+  } else if (percentage > 30) {
+    return Colors[2]
+  } else if (percentage > 20) {
+    return Colors[3]
+  } else if (percentage > 10) {
+    return Colors[4]
+  } else if (percentage > 0) {
+    return Colors[5]
+  } else {
     return ColorNone
   }
-
-  const colors = Colors.slice(1)
-
-  return colors[Math.floor(colors.length - (percentage / 50) * colors.length)]
 }
 
 export function getColorAndPositionForAPrice(price: number, sortedPriceList: number[]) {
@@ -74,12 +86,12 @@ export function getColorAndPositionForAPrice(price: number, sortedPriceList: num
 
   const priceIdx = sortedPriceList.findIndex((sortedPrice) => sortedPrice === price)
 
+  const colorCount = Object.keys(Colors).length
   const colorIdx = Math.floor(
-    (((price - minPrice) / (maxPrice - minPrice) + priceIdx / sortedPriceList.length) / 2) * Colors.length
+    (((price - minPrice) / (maxPrice - minPrice) + priceIdx / sortedPriceList.length) / 2) * colorCount
   )
 
-  const color =
-    sortedPriceList.length === 1 ? Colors[0] : Colors[colorIdx < Colors.length ? colorIdx : Colors.length - 1]
+  const color = sortedPriceList.length === 1 ? Colors[0] : Colors[colorIdx < colorCount ? colorIdx : colorCount - 1]
 
   return { color, position: priceIdx + 1 }
 }
@@ -96,13 +108,13 @@ export function generateUniqueSortedAdjustedPriceList(priceObjList: PriceObject[
 export function renderAdjustedPriceHTML(adjustedPrice: number, color: Color) {
   return `<span style="color:${color.fg};background-color:${color.bg};border: 1px solid ${
     color.border
-  };padding: 0px 10px;">${adjustedPrice.toLocaleString("ru-RU", {
+  };padding: 0px 10px; margin-right: 5px">${adjustedPrice.toLocaleString('ru-RU', {
     useGrouping: true,
   })}<span>`
 }
 
-export function renderPositionHTML(position: number): string {
-  return `<span style="color: #5d3a8e;outline: 1px solid #5d3a8e;padding: 0px 16px;">${position}</span> `
+export function renderPositionHTML(position: number | string): string {
+  return `<span style="color: #5d3a8e;outline: 1px solid #5d3a8e;padding: 0px 15px;">${position}</span> `
 }
 
 export function getPriceObjList(priceContainerNodeSelector: string, priceNodeSelector: string): PriceObject[] {
@@ -110,18 +122,18 @@ export function getPriceObjList(priceContainerNodeSelector: string, priceNodeSel
 
   const priceContainerElList = document.querySelectorAll(priceContainerNodeSelector)
 
-  for (let priceContainerEl of priceContainerElList) {
+  for (let priceContainerEl of Array.from(priceContainerElList)) {
     if (priceContainerEl instanceof HTMLElement && !priceContainerEl.dataset[DATA_KEY_ADJUSTED_PRICE]) {
       const priceNodeEl = priceContainerEl.querySelector(priceNodeSelector)
 
       if (!priceNodeEl || !(priceNodeEl instanceof HTMLElement)) {
         console.log(priceContainerEl, priceNodeEl)
         log(
-          "error",
+          'error',
           `"PriceNode" element (selector: "${priceNodeSelector}") is not found inside "PriceContainer" element (selector: "${priceContainerNodeSelector}").`
         )
 
-        priceContainerEl.dataset[DATA_KEY_ADJUSTED_PRICE] = "1"
+        priceContainerEl.dataset[DATA_KEY_ADJUSTED_PRICE] = '1'
       } else {
         priceObjList.push({
           price: null,
@@ -192,12 +204,12 @@ export function prependAdjustedPriceForPriceEachObj(priceObjList: PriceObject[])
 
     const color = getColorByBonusAmountPercentage(bonusAmountPercentage)
 
-    const totalPriceEl = document.createElement("span")
+    const totalPriceEl = document.createElement('span')
 
     totalPriceEl.innerHTML = renderAdjustedPriceHTML(adjustedPrice, color)
 
     priceObj.priceEl.prepend(totalPriceEl)
 
-    priceObj.priceContainerEl.dataset[DATA_KEY_ADJUSTED_PRICE] = "1"
+    priceObj.priceContainerEl.dataset[DATA_KEY_ADJUSTED_PRICE] = '1'
   })
 }
