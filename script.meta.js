@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         [megamarket.ru] Show adjusted prices
 // @namespace    http://tampermonkey.net/
-// @version      1.0.3
+// @version      1.0.4
 // @description  Sorry. Nothing interesting here.
 // @author       Persona
 // @match        https://megamarket.ru/*
