@@ -11,6 +11,7 @@ import {
 } from './helpers'
 
 const DATA_KEY_ADJUSTED_PRICE = 'adjustedPrice'
+const RENDER_INTERVAL = 2000
 
 ;(function main() {
   setInterval(() => {
@@ -21,36 +22,50 @@ const DATA_KEY_ADJUSTED_PRICE = 'adjustedPrice'
     setAdjustedPricesForRecentViews()
     setAdjustedPricesForMainProductPrice()
     renderColorInfoPanel()
-  }, 2000)
+  }, RENDER_INTERVAL)
 })()
 
 function renderColorInfoPanel() {
   if (document.body.dataset[DATA_KEY_ADJUSTED_PRICE]) {
-  } else {
-    const d = document.createElement('div')
-    d.innerHTML =
-      'По проценту начисляемых баллов: ' +
-      generateColorsInfoHTML('BONUS_AMOUNT') +
-      '<span style="padding-left: 20px;">Сравнение цен по-возрастанию: </span>' +
-      generateColorsInfoHTML('COMPARISON')
-    d.style.position = 'fixed'
-    d.style.bottom = '0'
-    d.style.width = '100%'
-    d.style.backgroundColor = 'white'
-    d.style.zIndex = '2147483647'
-    d.style.padding = '3px 5px'
-    d.style.lineHeight = '25px'
-    d.style.borderTop = '1px solid #d4d4d4'
-
-    document.body.appendChild(d)
-    document.body.dataset[DATA_KEY_ADJUSTED_PRICE] = '1'
+    return
   }
+
+  const d = document.createElement('div')
+  d.innerHTML = `По проценту начисляемых баллов: ${generateColorsInfoHTML(
+    'BONUS_AMOUNT'
+  )}<span style="padding-left: 20px;">Сравнение цен по-возрастанию: </span>${generateColorsInfoHTML('COMPARISON')}`
+  d.style.position = 'fixed'
+  d.style.bottom = '0'
+  d.style.width = '100%'
+  d.style.backgroundColor = 'white'
+  d.style.zIndex = '2147483647'
+  d.style.padding = '3px 5px'
+  d.style.lineHeight = '25px'
+  d.style.borderTop = '1px solid #d4d4d4'
+
+  document.body.appendChild(d)
+  document.body.dataset[DATA_KEY_ADJUSTED_PRICE] = '1'
 }
 
 function setAdjustedPricesForProductPage() {
   let priceObjList = getPriceObjList('.product-offer-price', '.product-offer-price__amount')
 
   priceObjList = populatePriceAndBonusAmountForEachPriceObj(priceObjList, '.bonus-amount')
+
+  if (priceObjList.length === 0) {
+    return
+  }
+  
+  const priceList: number[] = []
+  let minPrice = 0
+
+  priceObjList.forEach(({ price }) => {
+    if (price !== null) {
+      priceList.push(price)
+    }
+  })
+
+  minPrice = Math.min(...priceList)
 
   const sortedAdjustedPriceList = generateUniqueSortedAdjustedPriceList(priceObjList)
 
@@ -73,6 +88,10 @@ function setAdjustedPricesForProductPage() {
       (position <= 5 ? renderPositionHTML(position) : '') + renderAdjustedPriceHTML(adjustedPrice, color)
 
     const priceEl = priceObj.priceContainerEl.querySelectorAll('.product-offer-price__amount')[0]
+
+    if (priceEl instanceof HTMLElement && priceObj.price === minPrice) {
+      priceEl.style.color = 'green'
+    }
 
     priceEl.prepend(totalPriceEl)
 

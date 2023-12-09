@@ -30,7 +30,7 @@ export function parsePrice(priceString: string) {
 
 export function calcAdjustedPrice(priceObj: PriceObject) {
   if (priceObj.price) {
-    return priceObj.price - (priceObj.bonusAmount || 0)
+    return priceObj.price - (priceObj.bonusAmount ?? 0)
   } else {
     return null
   }
@@ -38,7 +38,7 @@ export function calcAdjustedPrice(priceObj: PriceObject) {
 
 export function generateColorsInfoHTML(type: 'BONUS_AMOUNT' | 'COMPARISON') {
   function colorInfoHTML(c: Color, text: string) {
-    return `<span style="color:${c.fg}; background-color:${c.bg}; border: 1px solid ${c.border}; padding:0 5px 0;">${text}</span>`
+    return `<span style="color:${c.fg};font-weight:bold; background-color:${c.bg}; border: 1px solid ${c.border}; padding:0 5px 0;">${text}</span>`
   }
 
   if (type === 'BONUS_AMOUNT') {
@@ -55,8 +55,10 @@ export function generateColorsInfoHTML(type: 'BONUS_AMOUNT' | 'COMPARISON') {
   } else if (type === 'COMPARISON') {
     return [
       renderPositionHTML('ТОП 1-5'),
-      ...Object.values(Colors).map((color,idx) => colorInfoHTML(color, idx.toString() )),
+      ...Object.values(Colors).map((color, idx) => colorInfoHTML(color, idx.toString())),
     ].join(' ')
+  } else {
+    throw new Error('Type is not supported.')
   }
 }
 
@@ -118,16 +120,15 @@ export function renderPositionHTML(position: number | string): string {
 }
 
 export function getPriceObjList(priceContainerNodeSelector: string, priceNodeSelector: string): PriceObject[] {
-  let priceObjList: PriceObject[] = []
+  const priceObjList: PriceObject[] = []
 
   const priceContainerElList = document.querySelectorAll(priceContainerNodeSelector)
 
-  for (let priceContainerEl of Array.from(priceContainerElList)) {
+  for (const priceContainerEl of Array.from(priceContainerElList)) {
     if (priceContainerEl instanceof HTMLElement && !priceContainerEl.dataset[DATA_KEY_ADJUSTED_PRICE]) {
       const priceNodeEl = priceContainerEl.querySelector(priceNodeSelector)
 
       if (!priceNodeEl || !(priceNodeEl instanceof HTMLElement)) {
-        console.log(priceContainerEl, priceNodeEl)
         log(
           'error',
           `"PriceNode" element (selector: "${priceNodeSelector}") is not found inside "PriceContainer" element (selector: "${priceContainerNodeSelector}").`
@@ -168,7 +169,7 @@ export function populatePriceAndBonusAmountForEachPriceObj(
 
     const bonusPriceEl = priceContainerEl.querySelectorAll(bonusAmountNodeSelector)[0]
 
-    if (!bonusPriceEl || !bonusPriceEl.textContent) {
+    if (!bonusPriceEl.textContent) {
       return {
         price: price,
         bonusAmount: 0,
