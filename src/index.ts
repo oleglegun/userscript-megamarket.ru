@@ -8,6 +8,7 @@ import {
   populatePriceAndBonusAmountForEachPriceObj,
   prependAdjustedPriceForPriceEachObj,
   generateColorsInfoHTML,
+  log,
 } from './helpers'
 
 const DATA_KEY_ADJUSTED_PRICE = 'adjustedPrice'
@@ -15,13 +16,19 @@ const RENDER_INTERVAL = 2000
 
 ;(function main() {
   setInterval(() => {
-    setAdjustedPricesForSearchPage()
-    setAdjustedPricesForProductPage()
-    setAdjustedPricesForOtherPage()
-    setAdjustedPricesForCartPage()
-    setAdjustedPricesForRecentViews()
-    setAdjustedPricesForMainProductPrice()
-    renderColorInfoPanel()
+    try {
+      setAdjustedPricesForSearchPage()
+      setAdjustedPricesForProductPage()
+      setAdjustedPricesForOtherPage()
+      setAdjustedPricesForCartPage()
+      setAdjustedPricesForRecentViews()
+      setAdjustedPricesForMainProductPrice()
+      renderColorInfoPanel()
+    } catch (err) {
+      if (err instanceof Error) {
+        log('error', 'Error happened while executing userscript', err)
+      }
+    }
   }, RENDER_INTERVAL)
 })()
 
@@ -55,7 +62,7 @@ function setAdjustedPricesForProductPage() {
   if (priceObjList.length === 0) {
     return
   }
-  
+
   const priceList: number[] = []
   let minPrice = 0
 

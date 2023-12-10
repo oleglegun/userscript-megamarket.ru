@@ -1,8 +1,12 @@
 const DATA_KEY_ADJUSTED_PRICE = 'adjustedPrice'
 
-export function log(level: 'info' | 'error', message: string) {
-  console.log(`/*-------------------------- PRICE ADJUSTER -----------------------------------*/\n${level.toUpperCase()} MESSAGE
-  \n${message}`)
+export function log(level: 'info', message: string): void
+export function log(level: 'error', message: string, error?: Error): void
+export function log(level: 'info' | 'error', message: string | object, error?: Error) {
+  console.log(
+    `/*-------------------------- PRICE ADJUSTER -----------------------------------*/\n${level.toUpperCase()} MESSAGE: ${message}` +
+      (error ? `\n${error.message}\n${error.stack}` : '')
+  )
 }
 
 const ColorUltra: Color = { fg: 'white', bg: '#b222ff', border: 'black' }
@@ -169,7 +173,7 @@ export function populatePriceAndBonusAmountForEachPriceObj(
 
     const bonusPriceEl = priceContainerEl.querySelectorAll(bonusAmountNodeSelector)[0]
 
-    if (!bonusPriceEl.textContent) {
+    if (!bonusPriceEl?.textContent) {
       return {
         price: price,
         bonusAmount: 0,

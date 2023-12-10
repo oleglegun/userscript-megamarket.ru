@@ -1,23 +1,22 @@
 {
   "name": "megamarket.ru",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "description": "",
   "main": "",
   "config": {
-    "userScriptPath": "docs/script.user.js",
-    "metaScriptPath": "script.meta.js"
+    "userScriptPath": "docs/script.user.js"
   },
   "scripts": {
-    "build": "tsc --outDir dist && npm run bundle && npm run add_tm_header",
+    "build": "tsc --outDir dist && npm run bundle",
+    "build-debug": "tsc --outDir dist && npm run bundle-debug",
+    "postbuild": "bash scripts/add_tm_header.sh | cat - ${npm_package_config_userScriptPath} > temp.txt && mv temp.txt ${npm_package_config_userScriptPath}",
     "bundle": "npx esbuild dist/index.js --minify --bundle --outfile=${npm_package_config_userScriptPath}",
-    "add_tm_header": "cat ${npm_package_config_metaScriptPath} | cat - ${npm_package_config_userScriptPath} > temp.txt && mv temp.txt ${npm_package_config_userScriptPath}"
+    "bundle-debug": "npx esbuild dist/index.js --bundle --outfile=${npm_package_config_userScriptPath}"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-  },
   "devDependencies": {
-    "typescript": "^5.2.2",
-    "esbuild": "0.19.6"
+    "esbuild": "0.19.6",
+    "typescript": "^5.2.2"
   }
 }
